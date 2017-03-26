@@ -43,6 +43,10 @@ def index():
 @app.route('/raspberry_pi')
 def raspberry_pi():
     return render_template('raspberry_pi.html', async_mode=socketio.async_mode)
+    
+@app.route('/pixhawk')
+def pixhawk():
+    return render_template('pixhawk.html', async_mode=socketio.async_mode)
 
 @app.route('/configuration')
 def configuration():
@@ -119,24 +123,24 @@ def download_log():
 #########################################################################################
 @socketio.on('getPiData')
 def PiData(message):
-    emit('Disk_Space',{'data': stat.diskSpace()})
-    emit('Pi_OS',{'data': stat.os()})
-    emit('CPU_Temp',{'data': stat.CPUTemp()})
-    emit('CPU_Mem',{'available': stat.CPUMem()[0],'total': stat.CPUMem()[1]})
+    #emit('Disk_Space',{'data': stat.diskSpace()})
+    #emit('Pi_OS',{'data': stat.os()})
+    #emit('CPU_Temp',{'data': stat.CPUTemp()})
+    #emit('CPU_Mem',{'available': stat.CPUMem()[0],'total': stat.CPUMem()[1]})
     emit('MAVProxy_Status',{'data': stat.MAVProxyStatus()})
     emit('Video_Status',{'data': stat.videoStatus()})
     emit('Pixhawk_Status',{'data': stat.pixhawkStatus()})
-    emit('Wifi_Network',{'network': wifistat.networkInfo()[0],'signal': wifistat.networkInfo()[1],'ip': wifistat.networkInfo()[2]})
+    #emit('Wifi_Network',{'network': wifistat.networkInfo()[0],'signal': wifistat.networkInfo()[1],'ip': wifistat.networkInfo()[2]})
 
 #The Raspberry Pi page will request data refreshes every x seconds
 @socketio.on('refreshPiData')
 def refreshPiData(message):
-    emit('CPU_Temp',{'data': stat.CPUTemp()})
-    emit('CPU_Mem',{'available': stat.CPUMem()[0],'total': stat.CPUMem()[1]})
+    #emit('CPU_Temp',{'data': stat.CPUTemp()})
+    #emit('CPU_Mem',{'available': stat.CPUMem()[0],'total': stat.CPUMem()[1]})
     emit('MAVProxy_Status',{'data': stat.MAVProxyStatus()})
     emit('Video_Status',{'data': stat.videoStatus()})
     emit('Pixhawk_Status',{'data': stat.pixhawkStatus()})
-    emit('Wifi_Network',{'network': wifistat.networkInfo()[0],'signal': wifistat.networkInfo()[1],'ip': wifistat.networkInfo()[2]})
+    #emit('Wifi_Network',{'network': wifistat.networkInfo()[0],'signal': wifistat.networkInfo()[1],'ip': wifistat.networkInfo()[2]})
 
 
 if __name__ == '__main__':

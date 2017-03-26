@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>        
+        <!-- META SECTION -->
+        <title>Poseidon UI - Pixhawk</title>            
+        <script type="text/javascript" type="text/javascript" href="{{ url_for('static', filename='js/socket.io.min.js') }}"></script>
+		<script type="text/javascript" type="text/javascript" href="{{ url_for('static', filename='js/angular.min.js') }}"></script>
+		<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='faviconbr.ico') }}">
+		 <!-- START PRELOADS -->
+        <audio id="audio-alert" src="{{ url_for('static', filename='audio/alert.mp3') }}" preload="auto"></audio>
+        <audio id="audio-fail" src="{{ url_for('static', filename='audio/fail.mp3') }}" preload="auto"></audio>
+        <!-- END PRELOADS -->                  
+        
+		<!-- START SCRIPTS -->
+        <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/jquery/jquery.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/jquery/jquery-ui.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/bootstrap/bootstrap.min.js') }}"></script>        
+        <script type='text/javascript' src="{{ url_for('static', filename='js/plugins/icheck/icheck.min.js') }}"></script>        
+        <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/scrolltotop/scrolltopcontrol.js') }}"></script>
+        
+        
+        <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/rickshaw/d3.v3.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/rickshaw/rickshaw.min.js') }}"></script>            
+        <script type='text/javascript' src="{{ url_for('static', filename='js/plugins/bootstrap/bootstrap-datepicker.js') }}"></script>                
+        <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/owl/owl.carousel.min.js') }}"></script>  
+		<script type="text/javascript" src="{{ url_for('static', filename='js/plugins/knob/jquery.knob.min.js') }}"></script>   		
+		        
+        
+        <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/moment.min.js') }}"></script>  
+
+        <script type="text/javascript" src="{{ url_for('static', filename='js/plugins.js') }}"></script>        
+        <script type="text/javascript" src="{{ url_for('static', filename='js/actions.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/socket.io.min.js') }}"></script>
+        
+        
+        <!-- CSS INCLUDE -->        
+        <link rel="stylesheet" type="text/css" id="theme" href="{{ url_for('static', filename='css/theme-default.css') }}"/>
+		<script type="text/javascript">
+        
+       
+         $(document).ready(function() {
+			
+			var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+			
+            function refreshPiData()
+            {
+                console.log('Refresh Data Requested')
+                socket.emit('refreshPiData', {data: 'refresh'});
+                setTimeout(refreshPiData, 4000);
+            }
+
+            //Refresh some of the Pi Data every 4 seconds. Not needed for everything.. and 1 second would be too much
+            refreshPiData();
+            
+            
+            document.getElementById("btnReloadApp").onclick = function () { 
+                 console.log('reload');
+                 socket.emit('command_from_UI', {data: 'reloadUI'});
+            };
+			
+            
+            
+			socket.on('connect', function() {
+                socket.emit('getPiData', {data: 'page_load'});
+				 //document.getElementById('ws_status').innerHTML = "Connected";
+				 //document.getElementById('ws_name').innerHTML = "Flask Websocket server";
+            });
+            
+            socket.on('Wifi_Network', function(msg) {
+                //signal
+                $('#Wifi_Signal').css('width', msg.signal + '%');
+                document.getElementById("Wifi_Signal_Label").innerHTML = msg.signal + '%';
+                
+                //network name
+                document.getElementById("Pi_Wifi_Network").innerHTML = msg.network;
+                if (msg.network!= "Not Connected") {
+						document.getElementById("Pi_Wifi_Network").className = "badge badge-success";
+				}
+				else {
+					document.getElementById("Pi_Wifi_Network").className = "badge badge-danger";
+				}
+                
+                //ip address
+                $("#Pi_Wifi_IP").html(msg.ip);
+                
+            });
+            
+            
+            
+            
+				
+            
+            socket.on('Disk_Space', function(msg) {
+				//$('#log').append('<br>' + $('<div/>').text('UpTime #: ' + msg.data).html());
+				$('#Disk_Space').val(msg.data).trigger('change');
+				document.getElementById("Disk_Space_Label").innerHTML = msg.data;
+				$("#Disk_Space_Sub_Label").html('Root Partition');
+            });
+            
+            socket.on('Pi_OS', function(msg) {
+				$('#Pi_OS').html('   ' + msg.data + '   ');
+            });
+            
+            socket.on('CPU_Temp', function(msg) {
+				$('#CPU_Temp').val(msg.data).trigger('change');
+				document.getElementById("CPU_Temp_Label").innerHTML = msg.data;
+				$("#CPU_Temp_Sub_Label").html('Live Value');
+			});
+            
+            socket.on('CPU_Mem', function(msg) {
+                $('#CPU_Mem').val(msg.available).trigger('change');
+                document.getElementById("CPU_Mem_Label").innerHTML = msg.available; 
+				$("#CPU_Mem_Sub_Label").html(msg.total);
+			});
+            
+            socket.on('MAVProxy_Status', function(msg) {
+                document.getElementById("MAVProxy_Status").innerHTML = msg.data; 
+                if (msg.data == "Running") {
+					document.getElementById('MAVProxy_Status').className = "badge badge-success";
+				} else {
+					document.getElementById('MAVProxy_Status').className = "badge badge-danger";
+				}
+			});
+            
+            socket.on('Video_Status', function(msg) {
+                document.getElementById("Video_Status").innerHTML = msg.data; 
+                if (msg.data == "Running") {
+					document.getElementById('Video_Status').className = "badge badge-success";
+				} else {
+					document.getElementById('Video_Status').className = "badge badge-danger";
+				}
+			});
+            
+            socket.on('Pixhawk_Status', function(msg) {
+                document.getElementById("Pixhawk_Status").innerHTML = msg.data; 
+                if (msg.data == "Connected") {
+					document.getElementById('Pixhawk_Status').className = "badge badge-success";
+				} else {
+					document.getElementById('Pixhawk_Status').className = "badge badge-danger";
+				}
+			});
+
+            
+	
+		});
+    </script>
+    </head>
+       <body>
+        <!-- START PAGE CONTAINER -->
+        <div class="page-container">
+            
+            <!-- START PAGE SIDEBAR -->
+            <div class="page-sidebar">
+                <!-- START X-NAVIGATION -->
+                <ul class="x-navigation">
+                    <li class="xn-logo">
+                        <a href="index">Poseidon UI</a>
+                        <a href="#" class="x-navigation-control"></a>
+                    </li>
+                    
+                    <li class="xn-title">Navigation</li>
+                    <li>
+                        <a href="/"><span class="fa fa-desktop"></span> <span class="xn-text">Dashboard</span></a>
+						                         
+                    </li>                    
+                    <li class="xn-openable active">
+                        <a href="#"><span class="fa fa-cogs"></span> <span class="xn-text">Systems</span></a>
+                        <ul>
+                            <li class="active"><a href=""><span class="fa fa-linux"></span> Pixhawk</a></li>
+                            <li><a href="/"><span class="fa fa-hdd-o"></span> Pixhawk</a></li>
+                            <li><a href="/"><span class="fa fa-anchor"></span> ROV</a></li>
+							<li><a href="/"><span class="fa fa-gamepad"></span> Controls</a></li>  
+                                   
+                            
+                        </ul>
+                    </li>
+                    <li><a href="/logs"><span class="fa fa-file-text-o"></span> Dive Logs</a></li>       
+					<li>
+						<a href="/configuration"><span class="fa fa-cog"></span> <span class="xn-text">Configuration</span></a>
+					</li>
+
+                    
+                                 
+                    
+                                     
+                   
+                    
+                </ul>
+                <!-- END X-NAVIGATION -->
+            </div>
+            <!-- END PAGE SIDEBAR -->
+            
+            <!-- PAGE CONTENT -->
+            <div class="page-content">
+                
+                <!-- START X-NAVIGATION VERTICAL -->
+                <ul class="x-navigation x-navigation-horizontal x-navigation-panel">
+                    <!-- TOGGLE NAVIGATION -->
+                    <li class="xn-icon-button">
+                        <a href="#" class="x-navigation-minimize"><span class="fa fa-dedent"></span></a>
+                    </li>
+                    <!-- END TOGGLE NAVIGATION -->  
+                    <!-- Restart Flask -->
+                    <li class="xn-icon-button pull-right">
+                        <a href="#" class="mb-control" data-box="#reload_app"><span class="fa fa-refresh"></span></a>                     
+                    </li> 
+                    
+                </ul>
+                <!-- END X-NAVIGATION VERTICAL -->                     
+                
+                <!-- START BREADCRUMB -->
+                <ul class="breadcrumb">
+                    <li><a href="index.html">Home</a></li>                    
+                    <li class="active">Subsystems</li>
+					 <li class="active">Pixhawk</li>
+                </ul>
+                <!-- END BREADCRUMB -->                
+                
+                <div class="page-title">                    
+                    <h2><span class="fa fa-linux"></span> Pixhawk</h2>
+                </div>                   
+                
+                <!-- PAGE CONTENT WRAPPER -->
+                <div class="page-content-wrap">
+                
+                    <div class="row">
+						<div class="col-md-4">
+							<div class="widget widget-default widget-padding-sm">                            
+                                <div class="widget-item-left">
+                                    <input class="knob" id= "CPU_Temp" data-width="100" data-height="100" data-min="40" data-max="175" data-displayInput=false data-bgColor="#F8F8F8 " data-fgColor="#61C0E6" value="80%" data-readOnly="true" data-thickness=".4"/>
+                                </div>
+                                <div class="widget-data">
+                                    <div class="widget-big-int"><span class="num-count" id="CPU_Temp_Label">0</span> &deg;F</div>
+                                    <div class="widget-title">Core Temp</div>
+                                    <div class="widget-subtitle" id="CPU_Temp_Sub_Label">Not Connected</div>   							
+                                </div>                            
+                                                      
+                            </div>     
+						</div>
+						<div class="col-md-4">
+							<div class="widget widget-default widget-padding-sm">                            
+                                <div class="widget-item-left">
+                                    <input class="knob" id= "CPU_Mem" data-width="100" data-height="100" data-min="0" data-max="100" data-displayInput=false data-bgColor="#F8F8F8 " data-fgColor="#61C0E6" value="80%" data-readOnly="true" data-thickness=".4"/>
+                                </div>
+                                <div class="widget-data">
+                                    <div class="widget-big-int"><span class="num-count" id="CPU_Mem_Label">0</span>%</div>
+                                    <div class="widget-title">CPU Memory</div>
+                                    <div class="widget-subtitle" id="CPU_Mem_Sub_Label">Not Connected</div>                                
+                                </div>                            
+                                                      
+                            </div>     
+						</div>
+						
+						<div class="col-md-4">
+							<div class="widget widget-default widget-padding-sm">                            
+                                <div class="widget-item-left">
+                                    <input class="knob" id= "Disk_Space" data-width="100" data-height="100" data-min="0" data-max="100" data-displayInput=false data-bgColor="#F8F8F8 " data-fgColor="#61C0E6" value="80%" data-readOnly="true" data-thickness=".4"/>
+                                </div>
+                                <div class="widget-data">
+                                    <div class="widget-big-int"><span class="num-count" id="Disk_Space_Label">0</span>%</div>
+                                    <div class="widget-title">Disk Space Used</div>
+                                    <div class="widget-subtitle" id="Disk_Space_Sub_Label">Not Connected</div>                                
+                                </div>                            
+                                                      
+                            </div>     
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6">   
+							<div class="panel panel-success panel-hidden-controls">
+								<div class="panel-heading">
+									<h3 class="panel-title"><span class="fa fa-info-circle"></span> System Information</h3>                                
+									<ul class="panel-controls">
+										<li><a href="#" class="panel-fullscreen"><span class="fa fa-expand"></span></a></li>
+										<li><a href="#" class="panel-collapse"><span class="fa fa-angle-down"></span></a></li>
+										<li><a href="#" class="panel-remove"><span class="fa fa-times"></span></a></li>
+									</ul>                                   
+								</div>
+								<div class="panel-body panel-body-table">
+									
+									<div class="table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            
+                                            <tbody>
+                                                <tr>
+                                                    <td width="50%" style="vertical-align:middle">Pixhawk Operating System</td>
+                                                    <td style="vertical-align:middle"><center><span class="badge badge-success" id="Pi_OS"></span></center></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="vertical-align:middle">MAVProxy Status</td>
+													<td style="vertical-align:middle"><center><span class="badge badge-success" id="MAVProxy_Status"></span></center></td>
+                                                </tr>  
+												 <tr>
+                                                    <td style="vertical-align:middle">Video Status</td>
+													<td style="vertical-align:middle"><center><span class="badge badge-success" id="Video_Status"></span></center></td>
+                                                </tr>  
+												<tr>
+                                                    <td style="vertical-align:middle">Pixhawk Status</td>
+													<td style="vertical-align:middle"><center><span class="badge badge-success" id="Pixhawk_Status"></span></center></td>
+                                                </tr>  
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                </div>
+								
+							</div>
+						</div>
+						<div class="col-md-6">
+							<!-- Start WIFI Block -->
+                            <div class="panel panel-success panel-hidden-controls">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title"><span class="fa fa-rss"></span> Wifi</h3>                                  
+                                    <ul class="panel-controls" style="margin-top: 2px;">
+                                        <li><a href="#" class="panel-fullscreen"><span class="fa fa-expand"></span></a></li>
+                                        <li><a href="#" class="panel-refresh"><span class="fa fa-refresh"></span></a></li>
+                                                                               
+                                    </ul>
+                                </div>
+                                <div class="panel-body panel-body-table">
+                                    
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            
+                                            <tbody>
+                                               
+                                                <tr>
+                                                    <td style="vertical-align:middle">Network</td>
+                                                    <td style="vertical-align:middle">
+													
+													<center>
+													<span id="Pi_Wifi_Network"></span>
+													</center>
+												
+													</td>
+                                                    
+                                                </tr>  
+												<tr>
+													<td style="vertical-align:middle">IP Address</td>
+													<td>
+														<center>
+                                                       <span id="Pi_Wifi_IP"></span>
+													   </center>
+                                                    </td>
+												</tr>
+												<tr>
+													<td style="vertical-align:middle">Signal Strength</td>
+													<td>
+														<center>
+														<div class="progress progress-small">															
+                                                            <div class="progress-bar progress-bar-colorful" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;" id="Wifi_Signal"></div>
+															
+                                                        </div>
+														<span id="Wifi_Signal_Label"></span>
+													   </center>
+                                                    </td>
+												</tr>
+                                                                                
+                                                
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <!-- END PROJECTS BLOCK -->
+                              
+						</div>
+						
+						
+                    </div>
+					
+					<div class="row">						
+								
+						<div class="col-md-4"> 
+						</div>						
+						
+						
+					</div>
+					
+					
+					
+                <!-- END PAGE CONTENT WRAPPER -->                
+            </div>            
+            <!-- END PAGE CONTENT -->
+        </div>
+        <!-- END PAGE CONTAINER -->
+
+        <!-- MESSAGE BOX-->
+        <div class="message-box animated fadeIn" data-sound="alert" id="mb-signout">
+            <div class="mb-container">
+                <div class="mb-middle">
+                    <div class="mb-title"><span class="fa fa-sign-out"></span> Log <strong>Out</strong> ?</div>
+                    <div class="mb-content">
+                        <p>Are you sure you want to log out?</p>                    
+                        <p>Press No if youwant to continue work. Press Yes to logout current user.</p>
+                    </div>
+                    <div class="mb-footer">
+                        <div class="pull-right">
+                            <a href="pages-login.html" class="btn btn-success btn-lg">Yes</a>
+                            <button class="btn btn-default btn-lg mb-control-close">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END MESSAGE BOX-->
+        
+        <!-- MESSAGE BOX-->
+        <div class="message-box animated fadeIn" data-sound="alert" id="reload_app">
+            <div class="mb-container">
+                <div class="mb-middle">
+                    <div class="mb-title"><span class="fa fa-sign-out"></span> Reload UI ?</div>
+                    <div class="mb-content">
+                        <p>Are you sure you want to reload the UI?</p>                    
+                        <p>This action pulls in any changes made to the code and makes them live.</p>
+                        <p>It can be used if you want to sideload changes not from github and need to reload.</p>
+                        <br /><br />
+                        <p><strong>After clicking Yes, you must manually refresh the webbrowser as well.</strong></p>
+                    </div>
+                    <div class="mb-footer">
+                        <div class="pull-right">
+                            <button class="btn btn-default btn-success btn-lg mb-control-close" id="btnReloadApp">Yes</button>
+                            <button class="btn btn-default btn-lg mb-control-close">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END MESSAGE BOX-->
+
+    </body>
+</html>
+
+
+
+
+
+
