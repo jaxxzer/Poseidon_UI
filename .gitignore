@@ -2,6 +2,18 @@
 Thumbs.db
 ehthumbs.db
 
+# Eclipse project
+*.project
+
+# Python compiler
+*.pyc
+
+# Mavproxy output
+mav.*
+
+# gedit temp files
+*.*~
+
 # Folder config file
 Desktop.ini
 
