@@ -4,6 +4,7 @@ ehthumbs.db
 
 # Eclipse project
 *.project
+*.pydevproject
 
 # Python compiler
 *.pyc
