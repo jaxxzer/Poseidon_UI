@@ -130,6 +130,7 @@ def PiData(message):
     emit('MAVProxy_Status',{'data': stat.MAVProxyStatus()})
     emit('Video_Status',{'data': stat.videoStatus()})
     emit('Pixhawk_Status',{'data': stat.pixhawkStatus()})
+    emit('Pixhawk_Depth',{'data':stat.pixhawkDepth()})
     #emit('Wifi_Network',{'network': wifistat.networkInfo()[0],'signal': wifistat.networkInfo()[1],'ip': wifistat.networkInfo()[2]})
 
 #The Raspberry Pi page will request data refreshes every x seconds
@@ -140,6 +141,8 @@ def refreshPiData(message):
     emit('MAVProxy_Status',{'data': stat.MAVProxyStatus()})
     emit('Video_Status',{'data': stat.videoStatus()})
     emit('Pixhawk_Status',{'data': stat.pixhawkStatus()})
+    emit('Pixhawk_Depth',{'data':stat.pixhawkDepth()})
+    
     #emit('Wifi_Network',{'network': wifistat.networkInfo()[0],'signal': wifistat.networkInfo()[1],'ip': wifistat.networkInfo()[2]})
 
 

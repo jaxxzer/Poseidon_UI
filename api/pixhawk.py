@@ -4,11 +4,40 @@ from flask import jsonify
 import serial.tools.list_ports
 from terminalprocess import TerminalProcess
 
+
+from pymavlink import mavutil
+import time
+
 class PixhawkMonitor:
 	def __init__(self):
 		self.process = None
 		self.readout = ''
+		pixhawk_master = mavutil.mavlink_connection('udpin:0.0.0.0:7777', source_system=10)
+		pixhawk_master.mav.set_callback(self.master_callback, pixhawk_master)
+		
+		if hasattr(pixhawk_master.mav, 'set_send_callback'):
+			pixhawk_master.mav.set_send_callback(self.master_send_callback, pixhawk_master)
+		
+		self.depth = 0
 
+	def master_callback(self):
+		print 'sup'
+		'''process mavlink message m on master, sending any messages to recipients'''
+		
+		mtype = m.get_type()
+		
+		print mtype
+		
+		if mtype == "SCALED_PRESSURE":
+			self.depth = m.press_abs
+
+
+	def master_send_callback(self):
+		return
+	
+	def get_depth(self):
+		return self.depth
+		
 	def device(self):
 		ports = serial.tools.list_ports.comports()
 		for port in ports:

@@ -60,6 +60,9 @@ class Status:
 		except:
 			data = "Error"
 		return data
+		
+	def pixhawkDepth(self):
+		return self.px.get_depth()
 
 	def MAVProxyStatus(self):
 		try:

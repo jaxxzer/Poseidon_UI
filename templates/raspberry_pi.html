@@ -140,6 +140,18 @@
 					document.getElementById('Pixhawk_Status').className = "badge badge-danger";
 				}
 			});
+			
+			socket.on('Pixhawk_Depth', function(msg) {
+			    console.log('hey')
+			    console.log(msg.data)
+                document.getElementById("Pixhawk_Depth").innerHTML = msg.data; 
+                if (msg.data > -1.0) {
+                
+					document.getElementById('Pixhawk_Depth').className = "badge badge-success";
+				} else {
+					document.getElementById('Pixhawk_Depth').className = "badge badge-danger";
+				}
+			});
 
             
 	
@@ -298,6 +310,10 @@
 												<tr>
                                                     <td style="vertical-align:middle">Pixhawk Status</td>
 													<td style="vertical-align:middle"><center><span class="badge badge-success" id="Pixhawk_Status"></span></center></td>
+                                                </tr>  
+												<tr>
+                                                    <td style="vertical-align:middle">Pixhawk Depth</td>
+													<td style="vertical-align:middle"><center><span class="badge badge-success" id="Pixhawk_Depth"></span></center></td>
                                                 </tr>  
                                             </tbody>
                                         </table>

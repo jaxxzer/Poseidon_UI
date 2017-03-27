@@ -101,36 +101,7 @@
             socket.on('Pi_OS', function(msg) {
 				$('#Pi_OS').html('   ' + msg.data + '   ');
             });
-            
-            socket.on('CPU_Temp', function(msg) {
-				$('#CPU_Temp').val(msg.data).trigger('change');
-				document.getElementById("CPU_Temp_Label").innerHTML = msg.data;
-				$("#CPU_Temp_Sub_Label").html('Live Value');
-			});
-            
-            socket.on('CPU_Mem', function(msg) {
-                $('#CPU_Mem').val(msg.available).trigger('change');
-                document.getElementById("CPU_Mem_Label").innerHTML = msg.available; 
-				$("#CPU_Mem_Sub_Label").html(msg.total);
-			});
-            
-            socket.on('MAVProxy_Status', function(msg) {
-                document.getElementById("MAVProxy_Status").innerHTML = msg.data; 
-                if (msg.data == "Running") {
-					document.getElementById('MAVProxy_Status').className = "badge badge-success";
-				} else {
-					document.getElementById('MAVProxy_Status').className = "badge badge-danger";
-				}
-			});
-            
-            socket.on('Video_Status', function(msg) {
-                document.getElementById("Video_Status").innerHTML = msg.data; 
-                if (msg.data == "Running") {
-					document.getElementById('Video_Status').className = "badge badge-success";
-				} else {
-					document.getElementById('Video_Status').className = "badge badge-danger";
-				}
-			});
+            k
             
             socket.on('Pixhawk_Status', function(msg) {
                 document.getElementById("Pixhawk_Status").innerHTML = msg.data; 
@@ -138,6 +109,17 @@
 					document.getElementById('Pixhawk_Status').className = "badge badge-success";
 				} else {
 					document.getElementById('Pixhawk_Status').className = "badge badge-danger";
+				}
+			});
+			
+			
+            socket.on('Pixhawk_Depth', function(msg) {
+                document.getElementById("Pixhawk_Depth").innerHTML = msg.data; 
+                if (msg.data > -1.0) {
+                ####### TODO : spit out depth
+					document.getElementById('Pixhawk_Depth').className = "badge badge-success";
+				} else {
+					document.getElementById('Pixhawk_Depth').className = "badge badge-danger";
 				}
 			});
 
@@ -298,6 +280,10 @@
 												<tr>
                                                     <td style="vertical-align:middle">Pixhawk Status</td>
 													<td style="vertical-align:middle"><center><span class="badge badge-success" id="Pixhawk_Status"></span></center></td>
+                                                </tr>  
+												<tr>
+                                                    <td style="vertical-align:middle">Pixhawk Depth</td>
+													<td style="vertical-align:middle"><center><span class="badge badge-success" id="Pixhawk_Depth"></span></center></td>
                                                 </tr>  
                                             </tbody>
                                         </table>
