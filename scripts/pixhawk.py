@@ -60,5 +60,3 @@ print 'done'
 
 while 1:
     px.process()
-    print 'sup'
-    time.sleep(0.1)
