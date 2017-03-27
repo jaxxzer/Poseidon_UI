@@ -16,8 +16,8 @@ class PixhawkMonitor(threading.Thread):
 		self.run_event = run_event
 		self.process = None
 		self.readout = ''
-		#self.pixhawk_master = mavutil.mavlink_connection('udpin:0.0.0.0:7777', source_system=10)
-		self.pixhawk_master = mavutil.mavlink_connection('/dev/ttyACM0', source_system=10)
+		self.pixhawk_master = mavutil.mavlink_connection('udpin:0.0.0.0:7777', source_system=10)
+		#self.pixhawk_master = mavutil.mavlink_connection('/dev/ttyACM0', source_system=10)
 		self.pixhawk_master.mav.set_callback(self.master_callback, self.pixhawk_master)
 		
 		if hasattr(self.pixhawk_master.mav, 'set_send_callback'):
