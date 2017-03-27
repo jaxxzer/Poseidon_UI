@@ -3,13 +3,17 @@
 from flask import jsonify
 import serial.tools.list_ports
 from terminalprocess import TerminalProcess
+import threading
+
 
 
 from pymavlink import mavutil
 import time
 
-class PixhawkMonitor:
-	def __init__(self):
+class PixhawkMonitor(threading.Thread):
+	def __init__(self, run_event):
+		threading.Thread.__init__(self)
+		self.run_event = run_event
 		self.process = None
 		self.readout = ''
 		#self.pixhawk_master = mavutil.mavlink_connection('udpin:0.0.0.0:7777', source_system=10)
@@ -21,6 +25,7 @@ class PixhawkMonitor:
 		
 		self.depth = 0
 
+
 	def master_callback(self, m, master):
 		print 'sup'
 		'''process mavlink message m on master, sending any messages to recipients'''
@@ -29,7 +34,7 @@ class PixhawkMonitor:
 		
 		print mtype
 		
-		if mtype == "SCALED_PRESSURE":
+		if mtype == "SCALED_PRESSURE2":
 			self.depth = m.press_abs
 
 
@@ -41,7 +46,6 @@ class PixhawkMonitor:
 		
 		
 	def mavlink_process(self):
-		self.depth = self.depth + 1
 		'''process packets from the MAVLink master'''
 		print ('hey')
 		#try:
@@ -66,3 +70,11 @@ class PixhawkMonitor:
 			print 'msg: %s' %msg.get_type()
 		
 		return 'hey'
+	
+	
+	def run(self):
+		while self.run_event.is_set():
+			try:
+				self.mavlink_process()
+			except (KeyboardInterrupt, SystemExit):
+				self.run_event.clear()

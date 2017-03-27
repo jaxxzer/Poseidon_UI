@@ -2,6 +2,7 @@
 
 from flask import Flask, Blueprint, render_template, json, request
 import pixhawk, camera
+import threading
 
 import time
 
@@ -9,7 +10,10 @@ import subprocess
 
 class Status:
 	def __init__(self):
-		self.px = pixhawk.PixhawkMonitor()
+		run_event = threading.Event()
+		run_event.set()
+		self.px = pixhawk.PixhawkMonitor(run_event)
+		self.px.start()
 		self.cm = camera.CameraMonitor()
 		self.cm.start()
 
@@ -51,7 +55,7 @@ class Status:
 		return 'hello'
 		
 	def pixhawkDepth(self):
-		self.px.mavlink_process()
+		# 		self.px.mavlink_process()
 		return self.px.get_depth()
 
 	def MAVProxyStatus(self):

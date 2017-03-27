@@ -9,7 +9,6 @@ import subprocess
 
 class Status:
 	def __init__(self):
-		self.px = pixhawk.PixhawkMonitor()
 		self.cm = camera.CameraMonitor()
 		self.cm.start()
 

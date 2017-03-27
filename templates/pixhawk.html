@@ -47,7 +47,7 @@
             {
                 console.log('Refresh Data Requested')
                 socket.emit('refreshPiData', {data: 'refresh'});
-                setTimeout(refreshPiData, 40);
+                setTimeout(refreshPiData, 100);
             }
 
             //Refresh some of the Pi Data every 4 seconds. Not needed for everything.. and 1 second would be too much
