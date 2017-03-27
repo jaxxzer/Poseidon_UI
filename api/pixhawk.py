@@ -87,7 +87,7 @@ class PixhawkMonitor:
 if __name__ == "__main__":
 	import time
 	px = PixhawkMonitor()
-	px.start()
+	#px.start()
 	loops = 0
 	while loops < 30:
 		loops += 1
