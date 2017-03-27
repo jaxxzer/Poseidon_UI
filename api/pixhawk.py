@@ -83,6 +83,27 @@ class PixhawkMonitor:
 
 	def stop(self):
 		self.process.kill()
+		
+	def process(self):
+		'''process packets from the MAVLink master'''
+		print ('hey')
+		#try:
+		s = self.pixhawk_master.recv(16*1024)
+			#		 except Exception:
+			#			 time.sleep(0.1)
+			#			 return
+		# prevent a dead serial port from causing the CPU to spin. The user hitting enter will
+		# cause it to try and reconnect
+		if len(s) == 0:
+			time.sleep(0.1)
+			return
+		
+		
+		
+		msgs = self.pixhawk_master.mav.parse_buffer(s)
+		
+		for msg in msgs:
+			print 'msg: %s' %msg.get_type()
 
 if __name__ == "__main__":
 	import time
