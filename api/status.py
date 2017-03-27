@@ -11,7 +11,6 @@ class Status:
 	def __init__(self):
 		self.px = pixhawk.PixhawkMonitor()
 		self.cm = camera.CameraMonitor()
-		self.px.start()
 		self.cm.start()
 
 		
@@ -49,19 +48,10 @@ class Status:
 		return TotalMem
 	
 	def pixhawkStatus(self):
-		#note:  this was not returning anything for me.... need to revisit
-		try:
-			p = subprocess.Popen(['ls', '/dev/serial/by-id'], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-			result, err = p.communicate()
-			if ("usb-3D_Robotics_PX4_FMU_v2.x_0-if00" in result):
-				data = "Connected"
-			else:
-				data = "Not Connected"
-		except:
-			data = "Error"
-		return data
+		return 'hello'
 		
 	def pixhawkDepth(self):
+		self.px.mavlink_process()
 		return self.px.get_depth()
 
 	def MAVProxyStatus(self):

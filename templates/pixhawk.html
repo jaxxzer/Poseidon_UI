@@ -47,7 +47,7 @@
             {
                 console.log('Refresh Data Requested')
                 socket.emit('refreshPiData', {data: 'refresh'});
-                setTimeout(refreshPiData, 4000);
+                setTimeout(refreshPiData, 40);
             }
 
             //Refresh some of the Pi Data every 4 seconds. Not needed for everything.. and 1 second would be too much
@@ -101,7 +101,7 @@
             socket.on('Pi_OS', function(msg) {
 				$('#Pi_OS').html('   ' + msg.data + '   ');
             });
-            k
+            
             
             socket.on('Pixhawk_Status', function(msg) {
                 document.getElementById("Pixhawk_Status").innerHTML = msg.data; 
@@ -116,7 +116,6 @@
             socket.on('Pixhawk_Depth', function(msg) {
                 document.getElementById("Pixhawk_Depth").innerHTML = msg.data; 
                 if (msg.data > -1.0) {
-                ####### TODO : spit out depth
 					document.getElementById('Pixhawk_Depth').className = "badge badge-success";
 				} else {
 					document.getElementById('Pixhawk_Depth').className = "badge badge-danger";
