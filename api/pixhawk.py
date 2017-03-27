@@ -10,7 +10,6 @@ import time
 
 class PixhawkMonitor:
 	def __init__(self):
-		self.process = None
 		self.readout = ''
 		pixhawk_master = mavutil.mavlink_connection('udpin:0.0.0.0:7777', source_system=10)
 		pixhawk_master.mav.set_callback(self.master_callback, pixhawk_master)
