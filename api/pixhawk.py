@@ -27,15 +27,13 @@ class PixhawkMonitor(threading.Thread):
 
 
 	def master_callback(self, m, master):
-		print 'sup'
 		'''process mavlink message m on master, sending any messages to recipients'''
 		
 		mtype = m.get_type()
-		
-		print mtype
-		
+				
 		if mtype == "SCALED_PRESSURE2":
 			self.depth = m.press_abs
+			print 'hi'
 
 
 	def master_send_callback(self):
@@ -47,31 +45,20 @@ class PixhawkMonitor(threading.Thread):
 		
 	def mavlink_process(self):
 		'''process packets from the MAVLink master'''
-		print ('hey')
-		#try:
-		s = self.pixhawk_master.recv(16*1024)
-		print ' '
-		print ''
-		print s
-			#		 except Exception:
-			#			 time.sleep(0.1)
-			#			 return
+		try:
+			s = self.pixhawk_master.recv(16*1024)
+		except Exception:
+			time.sleep(0.1)
+			return
 		# prevent a dead serial port from causing the CPU to spin. The user hitting enter will
 		# cause it to try and reconnect
 		if len(s) == 0:
 			time.sleep(0.1)
 			return
 		
-		
-		
 		msgs = self.pixhawk_master.mav.parse_buffer(s)
-		
-		for msg in msgs:
-			print 'msg: %s' %msg.get_type()
-		
-		return 'hey'
-	
-	
+
+
 	def run(self):
 		while self.run_event.is_set():
 			try:

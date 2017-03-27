@@ -9,10 +9,10 @@ import time
 import subprocess
 
 class Status:
-	def __init__(self):
-		run_event = threading.Event()
-		run_event.set()
-		self.px = pixhawk.PixhawkMonitor(run_event)
+	def __init__(self, run_event):
+		self.run_event = run_event
+		self.run_event.set()
+		self.px = pixhawk.PixhawkMonitor(self.run_event)
 		self.px.start()
 		self.cm = camera.CameraMonitor()
 		self.cm.start()

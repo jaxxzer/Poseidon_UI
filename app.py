@@ -7,9 +7,12 @@ import os
 from api import status
 from api import wifi
 
+import threading
+
+run_event = threading.Event()
 
 
-stat = status.Status()
+stat = status.Status(run_event)
 wifistat = wifi.Status()
 
 # Set this variable to "threading", "eventlet" or "gevent" to test the
@@ -73,6 +76,8 @@ def test_connect():
 @socketio.on('disconnect')
 def test_disconnect():
     print('Client disconnected', request.sid)
+    
+    
 
 
 ### Commands from UI ###
@@ -147,4 +152,8 @@ def refreshPiData(message):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=False,host='0.0.0.0',port=80)
+    try:
+        socketio.run(app, debug=False,host='0.0.0.0',port=80)
+    except (KeyboardInterrupt, SystemExit):
+        run_event.clear()
+        print('Done!')
